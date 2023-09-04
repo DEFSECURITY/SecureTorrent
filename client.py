@@ -6,7 +6,6 @@
 import customtkinter as tk
 import updater
 import webbrowser
-from PIL import Image
 
 Title = "SafeTorrenting"
 DiscordLink = "https://discord.gg/YhFsd7TVkN"
