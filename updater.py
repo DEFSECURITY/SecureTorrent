@@ -19,4 +19,4 @@ def UpdateCheck():
         else:
             print("CLI | Exiting Updater")
     except Exception as e:
-        print("CLI Updater | "+str(e))
+        print("CLI | "+str(e))
