@@ -17,7 +17,7 @@ class STSocketServerConnectionHandler(threading.Thread):
     def run(self):
         with self.conn:
             d = bytearray()
-            print(self.addr)
+            print('Connected by', self.addr[0])
             while True:
                 data = self.conn.recv(1024 * 1024) # 1MB chunks
                 if not data:
