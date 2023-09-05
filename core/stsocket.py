@@ -2,10 +2,10 @@ import sys
 sys.path.append('..')
 import socket
 import threading
-#import base64
 import cypto
 import config
 import time
+
 class STSocketServerConnectionHandler(threading.Thread):
     def __init__(self, conn, addr, INIT_KEY):
         super().__init__()
@@ -81,18 +81,3 @@ class STSocketClient():
     def newKey(self):
         r = self.send(b'NEWKEY')
         self.cypto.setKey(r)
-STSocketServer('127.0.0.1', 9832, config.GLOBAL_KEY).start()
-time.sleep(1)
-s = STSocketClient('127.0.0.1', 9832, config.GLOBAL_KEY)
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-p = bytearray()
-p.append(69)
-print(p[-1])
