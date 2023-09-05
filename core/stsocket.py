@@ -2,10 +2,10 @@ import sys
 sys.path.append('..')
 import socket
 import threading
-#import base64
 import cypto
 import config
 import time
+
 class STSocketServerConnectionHandler(threading.Thread):
     def __init__(self, conn, addr, INIT_KEY):
         super().__init__()
@@ -13,11 +13,10 @@ class STSocketServerConnectionHandler(threading.Thread):
         self.addr = addr
         self.cypto = cypto.cypto()
         self.cypto.setKey(INIT_KEY)
-        self.EOD = b'!!!'
     def run(self):
         with self.conn:
             d = bytearray()
-            print(self.addr)
+            print('Connected by', self.addr[0])
             while True:
                 data = self.conn.recv(1024 * 1024) # 1MB chunks
                 if not data:
@@ -25,11 +24,11 @@ class STSocketServerConnectionHandler(threading.Thread):
                 for char in data:
                     d.append(char)
                     try:
-                        if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end
+                        if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end of the data
                             def respond(data):
                                 self.conn.send(self.cypto.encrypt(data))
-                                self.conn.send(self.EOD)
-                            self.commandHandler(self.cypto.decrypt(d[:-3]), respond)
+                                self.conn.send(b'!!!') # EOD
+                            self.commandHandler(self.cypto.decrypt(bytes(d[:-3])), respond)
                             d = bytearray()
                     except IndexError:
                         pass
@@ -62,10 +61,9 @@ class STSocketClient():
         self.cypto.setKey(INIT_KEY)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
-        self.EOD = b'!!!'
     def send(self, data):
         self.socket.send(self.cypto.encrypt(data))
-        self.socket.send(self.EOD)
+        self.socket.send(b'!!!') # EOD
         d = bytearray()
         while True:
             data = self.socket.recv(1024 * 1024) # 1MB chunks
@@ -74,25 +72,19 @@ class STSocketClient():
             for char in data:
                 d.append(char)
                 try:
-                    if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end
-                        return self.cypto.decrypt(d[:-3])
+                    if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end of the data
+                        return self.cypto.decrypt(bytes(d[:-3]))
                 except IndexError:
                     pass
     def newKey(self):
         r = self.send(b'NEWKEY')
         self.cypto.setKey(r)
-STSocketServer('127.0.0.1', 9832, config.GLOBAL_KEY).start()
+
+# binary file test
+f = open('sample-30s.mp4', 'rb')
+f2 = open('sample-30s2.mp4', 'wb')
+STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY).start()
 time.sleep(1)
-s = STSocketClient('127.0.0.1', 9832, config.GLOBAL_KEY)
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-s.newKey()
-print(s.send(b'TEST'), s.cypto._key)
-p = bytearray()
-p.append(69)
-print(p[-1])
+s = STSocketClient('127.0.0.1', 5000, config.GLOBAL_KEY)
+f2.write(s.send(f.read()))
+print('done')
