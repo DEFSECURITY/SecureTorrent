@@ -1,4 +1,7 @@
-# todo: allow client to run in the background, add a logo?
+# 9-DEV
+# to do:
+# add icon (just let the app run in the background)
+# switch to customtkinter
 
 import tkinter as tk
 import updater
@@ -36,7 +39,7 @@ class Main:
         tools_menu.add_command(label="Settings")
 
         help_menu = tk.Menu(menubar, tearoff=0) # Done
-        help_menu.add_command(label="Check for updates", command=updater.Update)
+        help_menu.add_command(label="Check for updates", command=updater.update)
         help_menu.add_command(label="Join our Discord", command=self.join_discord)
 
         menubar.add_cascade(label="File", menu=file_menu)
@@ -45,14 +48,12 @@ class Main:
         menubar.add_cascade(label="Help", menu=help_menu)
 
         self.Screen.config(menu=menubar)
-        
+
     def join_discord(self):
         webbrowser.open(DiscordLink)
-    
+
     def run(self):
         self.Screen.mainloop()
-
-
 
 if __name__ == "__main__":
     main_instance = Main()
