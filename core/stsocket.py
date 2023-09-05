@@ -13,7 +13,6 @@ class STSocketServerConnectionHandler(threading.Thread):
         self.addr = addr
         self.cypto = cypto.cypto()
         self.cypto.setKey(INIT_KEY)
-        self.EOD = b'!!!'
     def run(self):
         with self.conn:
             d = bytearray()
@@ -28,7 +27,7 @@ class STSocketServerConnectionHandler(threading.Thread):
                         if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end
                             def respond(data):
                                 self.conn.send(self.cypto.encrypt(data))
-                                self.conn.send(self.EOD)
+                                self.conn.send(b'!!!') # EOD
                             self.commandHandler(self.cypto.decrypt(bytes(d[:-3])), respond)
                             d = bytearray()
                     except IndexError:
@@ -62,10 +61,9 @@ class STSocketClient():
         self.cypto.setKey(INIT_KEY)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
-        self.EOD = b'!!!'
     def send(self, data):
         self.socket.send(self.cypto.encrypt(data))
-        self.socket.send(self.EOD)
+        self.socket.send(b'!!!') # EOD
         d = bytearray()
         while True:
             data = self.socket.recv(1024 * 1024) # 1MB chunks
