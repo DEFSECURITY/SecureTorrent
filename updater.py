@@ -10,7 +10,7 @@ def UpdateCheck():
         LatestBuild = int(response.text.strip())
         print("CLI | Current downloaded build:",client.CurrentVersion)
         print("CLI | Latest build from GitHub:",LatestBuild)
-        if client.CurrentVersion != LatestBuild: # or > ?
+        if client.CurrentVersion != LatestBuild:
             result = messagebox.askyesno("Available update", "Theres a newer version available. \nDo you want to download it?")
             if result:
                 webbrowser.open("https://github.com/DEFSecurity/SafeTorrenting/releases/")
