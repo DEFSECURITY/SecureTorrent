@@ -1,9 +1,6 @@
-# client.py - https://github.com/DEFSECURITY/SafeTorrenting
 # todo: allow client to run in the background, add a logo?
-# import tkinter as tk
-# from tkinter import ttk
 
-import customtkinter as tk
+import tkinter as tk
 import updater
 import webbrowser
 
@@ -11,13 +8,10 @@ Title = "SafeTorrenting"
 DiscordLink = "https://discord.gg/YhFsd7TVkN"
 CurrentVersion = 11
 
-def Discord():
-    webbrowser.open(DiscordLink)
-
 class Main:
     def __init__(self):
-        self.Screen = tk.CTk()
-        self.Frame = tk.CTkFrame(self.Screen)
+        self.Screen = tk.Tk() # CustomTkinter
+        self.Frame = tk.Frame(self.Screen)
         self.Screen.title(f"{Title} - v{CurrentVersion}")
     
         menubar = tk.Menu(self.Screen)
@@ -41,9 +35,9 @@ class Main:
         tools_menu.add_separator()
         tools_menu.add_command(label="Settings")
 
-        help_menu = tk.Menu(menubar, tearoff=0)
+        help_menu = tk.Menu(menubar, tearoff=0) # Done
         help_menu.add_command(label="Check for updates", command=updater.UpdateCheck)
-        help_menu.add_command(label="Join our Discord", command=Discord)
+        help_menu.add_command(label="Join our Discord", command=self.join_discord)
 
         menubar.add_cascade(label="File", menu=file_menu)
         menubar.add_cascade(label="Edit", menu=edit_menu)
@@ -52,8 +46,15 @@ class Main:
 
         self.Screen.config(menu=menubar)
         
+    def join_discord(self):
+        webbrowser.open(DiscordLink)
+    
+    def run(self):
         self.Screen.mainloop()
+
+
 
 if __name__ == "__main__":
     updater.UpdateCheck()
-    app = Main()
+    main_instance = Main()
+    main_instance.run()

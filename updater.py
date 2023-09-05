@@ -8,8 +8,7 @@ def UpdateCheck():
     try:
         response = requests.get("https://raw.githubusercontent.com/DEFSECURITY/SafeTorrenting/main/build")
         LatestBuild = int(response.text.strip())
-        print("CLI | Current downloaded build:",client.CurrentVersion)
-        print("CLI | Latest build from GitHub:",LatestBuild)
+        print("CLI | Current downloaded build:",client.CurrentVersion,"and the latest one is:",LatestBuild)
         if client.CurrentVersion != LatestBuild:
             result = messagebox.askyesno("Available update", "Theres a newer version available. \nDo you want to download it?")
             if result:
