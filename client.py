@@ -36,7 +36,7 @@ class Main:
         tools_menu.add_command(label="Settings")
 
         help_menu = tk.Menu(menubar, tearoff=0) # Done
-        help_menu.add_command(label="Check for updates", command=updater.UpdateCheck)
+        help_menu.add_command(label="Check for updates", command=updater.Update)
         help_menu.add_command(label="Join our Discord", command=self.join_discord)
 
         menubar.add_cascade(label="File", menu=file_menu)
@@ -55,6 +55,5 @@ class Main:
 
 
 if __name__ == "__main__":
-    updater.UpdateCheck()
     main_instance = Main()
     main_instance.run()
