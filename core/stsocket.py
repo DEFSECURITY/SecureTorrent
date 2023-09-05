@@ -39,12 +39,14 @@ class STSocketServerConnectionHandler(threading.Thread):
             self.cypto.setKey(newkey)
         else:
             respond(data)
-class STSocketServer(threading.Thread):
+
+class STSocketServer(threading.Thread): # todo add a way to stop the server
     def __init__(self, host, port, INIT_KEY):
         super().__init__()
         self.INIT_KEY = INIT_KEY
         self.host = host
         self.port = port
+        self.start()
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
             server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -79,12 +81,15 @@ class STSocketClient():
     def newKey(self):
         r = self.send(b'NEWKEY')
         self.cypto.setKey(r)
+    def close(self):
+        self.socket.close()
 
 # binary file test
 f = open('sample-30s.mp4', 'rb')
 f2 = open('sample-30s2.mp4', 'wb')
-STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY).start()
+srv = STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY)
 time.sleep(1)
 s = STSocketClient('127.0.0.1', 5000, config.GLOBAL_KEY)
 f2.write(s.send(f.read()))
 print('done')
+s.close()
