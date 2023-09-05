@@ -24,7 +24,7 @@ class STSocketServerConnectionHandler(threading.Thread):
                 for char in data:
                     d.append(char)
                     try:
-                        if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end
+                        if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end of the data
                             def respond(data):
                                 self.conn.send(self.cypto.encrypt(data))
                                 self.conn.send(b'!!!') # EOD
@@ -72,10 +72,19 @@ class STSocketClient():
             for char in data:
                 d.append(char)
                 try:
-                    if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end
+                    if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end of the data
                         return self.cypto.decrypt(bytes(d[:-3]))
                 except IndexError:
                     pass
     def newKey(self):
         r = self.send(b'NEWKEY')
         self.cypto.setKey(r)
+
+# binary file test
+f = open('sample-30s.mp4', 'rb')
+f2 = open('sample-30s2.mp4', 'wb')
+STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY).start()
+time.sleep(1)
+s = STSocketClient('127.0.0.1', 5000, config.GLOBAL_KEY)
+f2.write(s.send(f.read()))
+print('done')
