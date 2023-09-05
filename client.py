@@ -6,7 +6,7 @@ import webbrowser
 
 Title = "SafeTorrenting"
 DiscordLink = "https://discord.gg/YhFsd7TVkN"
-CurrentVersion = 11
+CurrentVersion = 9
 
 class Main:
     def __init__(self):
