@@ -29,7 +29,7 @@ class STSocketServerConnectionHandler(threading.Thread):
                             def respond(data):
                                 self.conn.send(self.cypto.encrypt(data))
                                 self.conn.send(self.EOD)
-                            self.commandHandler(self.cypto.decrypt(d[:-3]), respond)
+                            self.commandHandler(self.cypto.decrypt(bytes(d[:-3])), respond)
                             d = bytearray()
                     except IndexError:
                         pass
@@ -75,7 +75,7 @@ class STSocketClient():
                 d.append(char)
                 try:
                     if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end
-                        return self.cypto.decrypt(d[:-3])
+                        return self.cypto.decrypt(bytes(d[:-3]))
                 except IndexError:
                     pass
     def newKey(self):
