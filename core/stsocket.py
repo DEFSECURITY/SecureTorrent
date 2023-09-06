@@ -1,3 +1,30 @@
+"""
+A small breakdown of the protocol:
+Data is encrypted using Fernet which is base64 encoded all data ends with '!!!'.
+The data is encrypted using INIT_KEY but can be changed at any time with a call form the client to change the key to a new random key. The server then sends the new key to the client.
+
+Commands that the server accepts:
+NEWKEY -> send a new random key to the client and set that as the key.
+FILEINFO [file hash] -> send the file "[file hash]"'s information to the client. (a JSON string with the following fields: name, size, chunkcount).
+FILEPART [file hash] [chunk number] -> send the chunk "[chunk number]" of the file "[file hash]" to the client.
+
+Errors format is as follows:
+ERROR [code] [message]
+The code consists of two digits.
+Digit one is the type of error, digit two is the error code.
+The following error types are:
+0: Server error - ie, the server is full. (not yet implemented)
+1: Request error - the server does not recognize the command or it's parameters.
+2: File error - error with the requested file.
+
+Errors that the server will send to the client:
+ERROR 00 -> the server is full. (not yet implemented)
+ERROR 10 -> the command is not recognized.
+ERROR 11 -> bad request. ie, the parameters are incorrect.
+ERROR 20 -> the file does not exist.
+ERROR 21 -> invalid chunk index.
+"""
+
 import sys
 sys.path.append('..')
 import filechunkreader
@@ -56,18 +83,21 @@ class STSocketServerConnectionHandler(threading.Thread):
                 data = {'name': openfiles[fileid].basename, 'size': openfiles[fileid].filesize, 'chunkcount': openfiles[fileid].chunkcount}
                 respond(bytes(json.dumps(data), 'utf-8'))
             else:
-                respond(b'ERROR 12 Bad request!')
+                respond(b'ERROR 11 Bad request!')
         elif string[:8] == 'FILEPART':
             if len(string.split(' ')) > 2 and string.split(' ')[1] and string.split(' ')[2]:
                 fileid = string.split(' ')[1]
                 if fileid not in openfiles:
                     respond(b'ERROR 20 File not found!')
                     return
-                respond(openfiles[fileid].readChunk(int(string.split(' ')[2])))
+                try:
+                    respond(openfiles[fileid].readChunk(int(string.split(' ')[2])))
+                except filechunkreader.FileChunkReaderChunkIndexError:
+                    respond(b'ERROR 21 Invalid chunk index!')
             else:
-                respond(b'ERROR 12 Bad request!')
+                respond(b'ERROR 11 Bad request!')
         else:
-            respond(b'ERROR 11 Invalid command!')
+            respond(b'ERROR 10 Invalid command!')
 
 class STSocketServer(threading.Thread): # todo add a way to stop the server
     def __init__(self, host, port, INIT_KEY):
