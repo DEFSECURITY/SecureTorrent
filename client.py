@@ -47,8 +47,6 @@ class Main:
         menubar.add_cascade(label="Help", menu=help_menu)
 
         self.Screen.config(menu=menubar)
-        updater.update()
-
     def join_discord(self):
         webbrowser.open(DiscordLink)
 
@@ -56,5 +54,6 @@ class Main:
         self.Screen.mainloop()
 
 if __name__ == "__main__":
+    updater.update()
     main_instance = Main()
     main_instance.run()

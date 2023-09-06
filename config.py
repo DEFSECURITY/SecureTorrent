@@ -8,3 +8,7 @@ if platform.system() == 'Windows':
     APP_DATA = os.getenv('APP_DATA') + '\\SecureTorrent'
 elif platform.system() == 'Linux':
     APP_DATA = os.getenv('HOME') + '/.SecureTorrent'
+
+Title = "sTorrent"
+DiscordLink = "https://discord.gg/YhFsd7TVkN"
+CurrentVersion = 9
