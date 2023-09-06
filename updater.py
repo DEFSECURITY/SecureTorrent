@@ -7,7 +7,6 @@ import config
 from CTkMessagebox import CTkMessagebox
 import webbrowser
 import logger as Logger
-
 logger = Logger.logger(os.path.basename(__file__))
 
 def update():

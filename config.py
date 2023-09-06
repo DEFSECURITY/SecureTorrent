@@ -1,13 +1,13 @@
 import random
 import platform
-import os
+from pathlib import Path
 GLOBAL_KEY = b'wxHCENbpMitxAt2l1EolOetJYTgMl33IB2Y1Ctriuh4=' # this is use for sending keys and fileinfo
 PORT = random.randint(7238, 7243)
 APP_DATA = ''
 if platform.system() == 'Windows':
-    APP_DATA = os.getenv('APP_DATA') + '\\SecureTorrent'
+    APP_DATA = str(Path.home()) + '\\AppData\\Roaming\\SecureTorrent'
 elif platform.system() == 'Linux':
-    APP_DATA = os.getenv('HOME') + '/.SecureTorrent'
+    APP_DATA = str(Path.home()) + '/.SecureTorrent'
 
 Title = "sTorrent"
 DiscordLink = "https://discord.gg/YhFsd7TVkN"
