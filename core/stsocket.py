@@ -44,6 +44,8 @@ class STSocketServerConnectionHandler(threading.Thread):
         self.cypto = cypto.cypto()
         self.cypto.setKey(INIT_KEY)
         self.EOD = '!!!'
+        self.daemon = True # try to kill the connection when the server is killed
+        self.start()
     def run(self):
         with self.conn:
             d = bytearray()
@@ -106,6 +108,7 @@ class STSocketServer(threading.Thread): # todo add a way to stop the server
         self.host = host
         self.port = port
         self.updatefiles()
+        self.daemon = True # try to kill the server when the program is closed
         self.start()
     def updatefiles(self):
         global openfiles
@@ -122,7 +125,7 @@ class STSocketServer(threading.Thread): # todo add a way to stop the server
             print('Listening on', (self.host, self.port))
             while True:
                 conn, addr = server.accept()
-                STSocketServerConnectionHandler(conn, addr, self.INIT_KEY).start()
+                STSocketServerConnectionHandler(conn, addr, self.INIT_KEY)
 
 class STSocketClient():
     def __init__(self, host, port, INIT_KEY):
