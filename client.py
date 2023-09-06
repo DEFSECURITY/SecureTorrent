@@ -15,8 +15,7 @@ class Main:
     def __init__(self):
         self.Screen = tk.Tk() # CustomTkinter
         self.Frame = tk.Frame(self.Screen)
-        self.Screen.title(f"{Title} - v{CurrentVersion}")
-    
+        self.Screen.title(f"{Title} - v{CurrentVersion}")  
         menubar = tk.Menu(self.Screen)
         
         file_menu = tk.Menu(menubar, tearoff=0)
@@ -38,8 +37,8 @@ class Main:
         tools_menu.add_separator()
         tools_menu.add_command(label="Settings")
 
-        help_menu = tk.Menu(menubar, tearoff=0) # Done
-        help_menu.add_command(label="Check for updates", command=updater.update)
+        help_menu = tk.Menu(menubar, tearoff=0)
+        help_menu.add_command(label="Check for updates", command=updater.update())
         help_menu.add_command(label="Join our Discord", command=self.join_discord)
 
         menubar.add_cascade(label="File", menu=file_menu)
@@ -48,6 +47,7 @@ class Main:
         menubar.add_cascade(label="Help", menu=help_menu)
 
         self.Screen.config(menu=menubar)
+        updater.update()
 
     def join_discord(self):
         webbrowser.open(DiscordLink)
