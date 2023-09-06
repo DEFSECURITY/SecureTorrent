@@ -9,6 +9,7 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Linux':
     APP_DATA = str(Path.home()) + '/.SecureTorrent'
 
-Title = "sTorrent"
-DiscordLink = "https://discord.gg/YhFsd7TVkN"
+Title = 'SecureTorrent'
+DiscordLink = 'https://discord.gg/YhFsd7TVkN'
 CurrentVersion = 9
+GitHub = 'https://raw.githubusercontent.com/DEFSECURITY/SecureTorrent'
