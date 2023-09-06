@@ -1,5 +1,5 @@
-# SafeTorrenting (sth)
-A newer, safe way for torrenting.
+# sTorrent (SafeTorrent)
+A newer, safer way for torrenting.
 
 # Installing
 ```
