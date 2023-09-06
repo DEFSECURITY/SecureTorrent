@@ -35,7 +35,11 @@ import config
 import time
 import json
 import os
+import logger as Logger
+logger = Logger.logger(os.path.basename(__file__))
+
 openfiles = {}
+
 class STSocketServerConnectionHandler(threading.Thread):
     def __init__(self, conn, addr, INIT_KEY):
         super().__init__()
@@ -49,10 +53,11 @@ class STSocketServerConnectionHandler(threading.Thread):
     def run(self):
         with self.conn:
             d = bytearray()
-            print('Connected by', self.addr[0])
+            logger.log('Connection from', self.addr[0])
             while True:
                 data = self.conn.recv(1024 * 1024) # 1MB chunks
                 if not data:
+                    logger.log(self.addr[0], 'said goodbye')
                     break
                 for char in data:
                     d.append(char)
@@ -122,7 +127,7 @@ class STSocketServer(threading.Thread): # todo add a way to stop the server
             server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server.bind((self.host, self.port))
             server.listen()
-            print('Listening on', (self.host, self.port))
+            logger.log('ST Socket Server listening on', (self.host, self.port))
             while True:
                 conn, addr = server.accept()
                 STSocketServerConnectionHandler(conn, addr, self.INIT_KEY)
@@ -162,15 +167,3 @@ class STSocketClient():
         self.cypto.setKey(r)
     def close(self):
         self.socket.close()
-
-# binary file test
-srv = STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY)
-time.sleep(1)
-s = STSocketClient('127.0.0.1', 5000, config.GLOBAL_KEY)
-fileid = '500afe4eeb535c5ecd1c205e18be8c3db97dce216088e57fdad8e08a3a4028c3'
-file = json.loads(s.send(bytes('FILEINFO ' + fileid, 'utf-8'))[1])
-print(file)
-f = open(file['name'], 'wb')
-for i in range(file['chunkcount']):
-    f.write(s.send(bytes('FILEPART ' + fileid + ' ' + str(i + 1), 'utf-8'))[0])
-print('Done')
