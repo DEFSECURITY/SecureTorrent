@@ -1,7 +1,7 @@
 """
 A small breakdown of the protocol:
 Data is encrypted using Fernet which is base64 encoded all data ends with '!!!'.
-The data is encrypted using INIT_KEY but can be changed at any time with a call form the client to change the key to a new random key. The server then sends the new key to the client.
+The data is encrypted using INIT_KEY but can be changed at any time with a call form the client to change the key to a new random key, the server then sends the new key to the client.
 
 Commands that the server accepts:
 NEWKEY -> send a new random key to the client and set that as the key.
