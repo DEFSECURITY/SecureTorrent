@@ -1,19 +1,25 @@
 # Updater: 9-DEV
+import sys
+sys.path.append('core')
+import os
 import requests
 import client
 from CTkMessagebox import CTkMessagebox
 import webbrowser
+import logger as Logger
+
+logger = Logger.logger(os.path.basename(__file__))
 
 def update():
     try:
         response = requests.get("https://raw.githubusercontent.com/DEFSECURITY/SafeTorrenting/main/build")
         latest_build = int(response.text.strip())
-        print("CLI | Current downloaded build:", client.CurrentVersion, "and the latest one is:", latest_build)
+        logger.log("Current downloaded build:", client.CurrentVersion, "and the latest one is:", latest_build)
         
         if client.CurrentVersion != latest_build: # for e.g.: 9 is not equal 10 - update, or 10 is not equal 9, update.
             msg = CTkMessagebox(
                 title="Available stable update",
-                message=f"There's a newer version available \nDo you want to download it? \nCurrent Version: {client.CurrentVersion}\nLatest: {latest_build}",
+                message=f"There's a newer version available \nDo you want to download it?\nCurrent Version: {client.CurrentVersion}\nLatest: {latest_build}",
                 icon="question",
                 option_1="No",
                 option_2="Yes"
@@ -26,4 +32,4 @@ def update():
             else:
                 exit
     except Exception as e:
-        print("CLI | " + str(e))
+        logger.error(e)
