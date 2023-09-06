@@ -1,5 +1,4 @@
 cryptography
 requests
 customtkinter
-tkinter
 CTkMessagebox==2.5
