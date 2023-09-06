@@ -10,7 +10,7 @@ def update():
         latest_build = int(response.text.strip())
         print("CLI | Current downloaded build:", client.CurrentVersion, "and the latest one is:", latest_build)
         
-        if client.CurrentVersion != latest_build: # for e.g.: 9 => 10
+        if client.CurrentVersion != latest_build: # for e.g.: 9 is not equal 10 - update, or 10 is not equal 9, update.
             msg = CTkMessagebox(
                 title="Available stable update",
                 message=f"There's a newer version available \nDo you want to download it? \nCurrent Version: {client.CurrentVersion}\nLatest: {latest_build}",
@@ -24,6 +24,6 @@ def update():
             if response == "Yes":
                 webbrowser.open("https://github.com/DEFSecurity/SafeTorrenting/releases/")
             else:
-                print("CLI | Exiting Updater")
+                exit
     except Exception as e:
         print("CLI | " + str(e))

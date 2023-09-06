@@ -7,7 +7,7 @@ import tkinter as tk
 import updater
 import webbrowser
 
-Title = "SafeTorrenting"
+Title = "sTorrent"
 DiscordLink = "https://discord.gg/YhFsd7TVkN"
 CurrentVersion = 11
 
