@@ -5,6 +5,8 @@ import threading
 import cypto
 import config
 import time
+import json
+import os
 
 class STSocketServerConnectionHandler(threading.Thread):
     def __init__(self, conn, addr, INIT_KEY):
@@ -14,6 +16,9 @@ class STSocketServerConnectionHandler(threading.Thread):
         self.cypto = cypto.cypto()
         self.cypto.setKey(INIT_KEY)
         self.EOD = b'!!!'
+        f = open(config.APP_DATA + '/files.json')
+        self.filelist = json.load(f)
+        f.close()
     def run(self):
         with self.conn:
             d = bytearray()
@@ -40,7 +45,12 @@ class STSocketServerConnectionHandler(threading.Thread):
             respond(newkey)
             self.cypto.setKey(newkey)
         elif string[:8] == 'FILEINFO':
-            pass
+            fileid = string.split(' ')[1]
+            if fileid not in self.filelist:
+                respond(b'ERROR 2 File not found!')
+                return
+            data = {'name': os.path.basename(self.filelist[fileid]), 'size': os.path.getsize(self.filelist[fileid])}
+            respond(bytes(json.dumps(data), 'utf-8'))
         elif string[:8] == 'FILEPART':
             pass
         else:
@@ -86,7 +96,7 @@ class STSocketClient():
                         string = str(data, 'utf-8')
                         if string[:5] == 'ERROR':
                             raise Exception('Error from server: code: ' + string.split(' ')[1] + ', message: ' + ' '.join(string.split(' ')[2:]))
-                        return data
+                        return data, string
                 except IndexError:
                     pass
     def newKey(self):
@@ -99,5 +109,4 @@ class STSocketClient():
 srv = STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY)
 time.sleep(1)
 s = STSocketClient('127.0.0.1', 5000, config.GLOBAL_KEY)
-s.send(b'test')
-print('done')
+print(s.send(b'FILEINFO 500afe4eeb535c5ecd1c205e18be8c3db97dce216088e57fdad8e08a3a4028c3'))
