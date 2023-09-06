@@ -61,7 +61,7 @@ class STSocketServerConnectionHandler(threading.Thread):
                             def respond(data):
                                 self.conn.send(self.cypto.encrypt(data))
                                 self.conn.send(bytes(self.EOD, 'utf-8'))
-                            self.commandHandler(self.cypto.decrypt(bytes(d[:-3])), respond)
+                            self.commandHandler(self.cypto.decrypt(bytes(d[:-len(self.EOD)])), respond)
                             d = bytearray()
                     except IndexError:
                         pass
@@ -146,7 +146,7 @@ class STSocketClient():
                 d.append(char)
                 try:
                     if self.EOD == str(d[-len(self.EOD):], 'utf-8'): # Check for end of data
-                        data = self.cypto.decrypt(bytes(d[:-3]))
+                        data = self.cypto.decrypt(bytes(d[:-len(self.EOD)]))
                         string = ''
                         try:
                             string = str(data, 'utf-8')
