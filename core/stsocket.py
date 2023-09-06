@@ -13,6 +13,7 @@ class STSocketServerConnectionHandler(threading.Thread):
         self.addr = addr
         self.cypto = cypto.cypto()
         self.cypto.setKey(INIT_KEY)
+        self.EOD = b'!!!'
     def run(self):
         with self.conn:
             d = bytearray()
@@ -24,21 +25,26 @@ class STSocketServerConnectionHandler(threading.Thread):
                 for char in data:
                     d.append(char)
                     try:
-                        if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end of the data
+                        if str(self.EOD, 'utf-8') == str(d[-len(str(self.EOD, 'utf-8')):], 'utf-8'): # Check for end of data
                             def respond(data):
                                 self.conn.send(self.cypto.encrypt(data))
-                                self.conn.send(b'!!!') # EOD
+                                self.conn.send(self.EOD)
                             self.commandHandler(self.cypto.decrypt(bytes(d[:-3])), respond)
                             d = bytearray()
                     except IndexError:
                         pass
     def commandHandler(self, data, respond):
-        if data == b'NEWKEY':
+        string = str(data, 'utf-8')
+        if string == 'NEWKEY':
             newkey = self.cypto.genKey()
             respond(newkey)
             self.cypto.setKey(newkey)
+        elif string[:8] == 'FILEINFO':
+            pass
+        elif string[:8] == 'FILEPART':
+            pass
         else:
-            respond(data)
+            respond(b'ERROR 1 Invalid command!')
 
 class STSocketServer(threading.Thread): # todo add a way to stop the server
     def __init__(self, host, port, INIT_KEY):
@@ -63,9 +69,10 @@ class STSocketClient():
         self.cypto.setKey(INIT_KEY)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
+        self.EOD = b'!!!'
     def send(self, data):
         self.socket.send(self.cypto.encrypt(data))
-        self.socket.send(b'!!!') # EOD
+        self.socket.send(self.EOD)
         d = bytearray()
         while True:
             data = self.socket.recv(1024 * 1024) # 1MB chunks
@@ -74,8 +81,12 @@ class STSocketClient():
             for char in data:
                 d.append(char)
                 try:
-                    if d[-1] == ord('!') and d[-2] == ord('!') and d[-3] == ord('!'): # 3 "!"s is the end of the data
-                        return self.cypto.decrypt(bytes(d[:-3]))
+                    if str(self.EOD, 'utf-8') == str(d[-len(str(self.EOD, 'utf-8')):], 'utf-8'): # Check for end of data
+                        data = self.cypto.decrypt(bytes(d[:-3]))
+                        string = str(data, 'utf-8')
+                        if string[:5] == 'ERROR':
+                            raise Exception('Error from server: code: ' + string.split(' ')[1] + ', message: ' + ' '.join(string.split(' ')[2:]))
+                        return data
                 except IndexError:
                     pass
     def newKey(self):
@@ -85,11 +96,8 @@ class STSocketClient():
         self.socket.close()
 
 # binary file test
-f = open('sample-30s.mp4', 'rb')
-f2 = open('sample-30s2.mp4', 'wb')
 srv = STSocketServer('127.0.0.1', 5000, config.GLOBAL_KEY)
 time.sleep(1)
 s = STSocketClient('127.0.0.1', 5000, config.GLOBAL_KEY)
-f2.write(s.send(f.read()))
+s.send(b'test')
 print('done')
-s.close()
