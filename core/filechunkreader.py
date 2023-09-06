@@ -9,6 +9,8 @@ class FileChunkReader:
         self.basename = os.path.basename(file)
         self.filesize = os.path.getsize(file)
         self.chunkcount = math.ceil(self.filesize / self._chunksize)
+    def __del__(self):
+        self._file.close()
     def readChunk(self, chunk):
         if chunk > self.chunkcount or chunk < 1:
             raise FileChunkReaderChunkIndexError('chunk index out of range!')
