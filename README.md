@@ -1,4 +1,4 @@
-# sTorrent (SafeTorrent)
+# sTorrent (SecureTorrent)
 A newer, safer way for torrenting.
 
 # Installing
