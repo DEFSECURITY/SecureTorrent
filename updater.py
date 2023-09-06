@@ -15,12 +15,12 @@ try:
     logger.log("Current build:", config.CurrentVersion, "and the latest one is:", latest_build)
     
     if config.CurrentVersion != latest_build: # for e.g.: 9 is not equal 10 - update, or 10 is not equal 9, update.
-        msg = CTkMessagebox(
+        msg = CTkMessagebox( # this code is causing a blank window to be opened
             title="Available update",
             message=f"There's a newer version available.\nDo you want to download it?\nCurrent Version: {config.CurrentVersion} Latest: {latest_build}",
             icon="question",
-            option_1="Yes",
-            option_2="No"
+            option_1="No",
+            option_2="Yes"
         )
         
         response = msg.get()
