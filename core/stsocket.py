@@ -26,7 +26,7 @@ ERROR 21 -> invalid chunk index.
 """
 
 import sys
-sys.path.append('..')
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import filechunkreader
 import socket
 import threading

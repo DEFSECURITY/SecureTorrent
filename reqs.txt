@@ -3,3 +3,4 @@ requests==2.31.0
 customtkinter==5.2.0
 CTkMessagebox==2.5
 infi.systray==65.5.0
+upnpy==1.1.8

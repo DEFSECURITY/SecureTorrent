@@ -1,12 +1,11 @@
 # 9-DEV
 # to do:
 # add icon (just let the app run in the background)
-import updater # this will exit the app if the user updates
-
 import sys
 sys.path.append("core")
 import hashfile
 import stsocket
+import portforwarding
 import logger as Logger
 import config
 from PIL import Image
@@ -16,11 +15,23 @@ import customtkinter
 import os
 logger = Logger.logger(os.path.basename(__file__))
 
+logger.log("Checking for updates...")
+import updater # this will exit the app if the user updates
+
 logger.log("Starting app...")
 logger.log("Starting STSocketServer...")
 server = stsocket.STSocketServer("0.0.0.0", config.PORT, config.INIT_KEY)
 logger.log("Done")
 
+logger.log("Trying to use UPnP...")
+pf = portforwarding.PortForwarding()
+logger.log("IP:", pf.GetPublicIP())
+try:
+    pf.DeletePortForward(config.PORT, "TCP")
+except:
+    pass
+pf.AddPortForward(config.PORT, '0.0.0.0', "TCP", "SecureTorrent Server")
+logger.log("Done")
 # this is really broken for some reason
 #systray = None
 #try:
@@ -66,5 +77,6 @@ filemenu.add_command(label="Exit", command=quit)
 menubar.add_cascade(label="App", menu=filemenu)
 
 app.config(menu=menubar)
+logger.log("App started")
 app.mainloop()
 quit()

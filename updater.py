@@ -5,6 +5,7 @@ import os
 import requests
 import config
 from CTkMessagebox import CTkMessagebox
+import customtkinter
 import webbrowser
 import logger as Logger
 logger = Logger.logger(os.path.basename(__file__))
@@ -15,15 +16,19 @@ try:
     logger.log("Current build:", config.CurrentVersion, "and the latest one is:", latest_build)
     
     if config.CurrentVersion != latest_build: # for e.g.: 9 is not equal 10 - update, or 10 is not equal 9, update.
+        app = customtkinter.CTk()
         msg = CTkMessagebox( # this code is causing a blank window to be opened
+            master=app,
             title="Available update",
             message=f"There's a newer version available.\nDo you want to download it?\nCurrent Version: {config.CurrentVersion} Latest: {latest_build}",
             icon="question",
             option_1="No",
             option_2="Yes"
         )
-        
+        app.update()
         response = msg.get()
+        #app.destroy()
+        app.quit()
         
         if response == "Yes":
             logger.log("Opening GitHub to download the new version...")
